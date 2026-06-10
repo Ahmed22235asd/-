@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مُراجِع - تذكير الكلمات</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --accent: #3b82f6;
+    --accent2: #06b6d4;
+    --gold: #f59e0b;
+    --green: #10b981;
+    --red: #ef4444;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --border: #1e293b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG Stars */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background: radial-gradient(ellipse at 20% 50%, #1e3a5f22 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, #0e4d4d22 0%, transparent 50%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,14,26,0.9);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex; align-items:center; justify-content:space-between;
+  }
+  .logo { font-family:'Tajawal',sans-serif; font-weight:900; font-size:1.6rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .logo span { font-size:1.1rem; }
+
+  /* ===== ALERTS BAR ===== */
+  #alerts-bar {
+    display:none;
+    background: linear-gradient(90deg, #78350f, #92400e);
+    border-bottom: 2px solid var(--gold);
+    padding: 10px 20px;
+    font-size:.9rem;
+    animation: slideDown .4s ease;
+  }
+  #alerts-bar.show { display:block; }
+  .alert-item { display:inline-flex; align-items:center; gap:8px; margin-left:16px;
+    background: rgba(0,0,0,.3); border-radius:20px; padding:4px 12px;
+    cursor:pointer; transition:background .2s; }
+  .alert-item:hover { background: rgba(0,0,0,.5); }
+  @keyframes slideDown { from{transform:translateY(-100%)} to{transform:translateY(0)} }
+
+  /* ===== MAIN LAYOUT ===== */
+  main { max-width:900px; margin:0 auto; padding:28px 20px; position:relative; z-index:1; }
+
+  /* ===== TABS ===== */
+  .tabs { display:flex; gap:8px; margin-bottom:28px; background:var(--surface); border-radius:14px; padding:6px; }
+  .tab { flex:1; padding:10px; border:none; background:transparent; color:var(--muted);
+    font-family:'Cairo',sans-serif; font-size:.95rem; font-weight:600; border-radius:10px;
+    cursor:pointer; transition:all .25s; }
+  .tab.active { background:var(--accent); color:#fff; box-shadow:0 4px 20px #3b82f644; }
+
+  /* ===== SECTION ===== */
+  .section { display:none; }
+  .section.active { display:block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ===== CARD ===== */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius:20px;
+    padding:24px;
+    margin-bottom:20px;
+  }
+  .card-title { font-weight:700; font-size:1.1rem; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+
+  /* ===== INPUTS ===== */
+  input[type=text], textarea, select {
+    width:100%; padding:12px 16px; border-radius:12px;
+    background:var(--surface2); border:1px solid var(--border);
+    color:var(--text); font-family:'Cairo',sans-serif; font-size:.95rem;
+    outline:none; transition:border .2s;
+  }
+  input[type=text]:focus, textarea:focus { border-color:var(--accent); }
+  textarea { resize:vertical; min-height:100px; direction:ltr; }
+  label { display:block; font-size:.85rem; color:var(--muted); margin-bottom:6px; font-weight:600; }
+  .field { margin-bottom:14px; }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    padding:11px 22px; border:none; border-radius:12px;
+    font-family:'Cairo',sans-serif; font-size:.95rem; font-weight:700;
+    cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:8px;
+  }
+  .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; box-shadow:0 4px 20px #3b82f644; }
+  .btn-primary:hover { transform:translateY(-2px); box-shadow:0 6px 24px #3b82f666; }
+  .btn-success { background:var(--green); color:#fff; }
+  .btn-danger { background:var(--red); color:#fff; }
+  .btn-ghost { background:var(--surface2); color:var(--text); border:1px solid var(--border); }
+  .btn-ghost:hover { border-color:var(--accent); }
+  .btn-sm { padding:7px 14px; font-size:.82rem; border-radius:8px; }
+
+  /* ===== GROUP CARDS ===== */
+  .group-card {
+    background:var(--surface2);
+    border:1px solid var(--border);
+    border-radius:16px;
+    padding:18px;
+    margin-bottom:14px;
+    transition:border-color .2s;
+  }
+  .group-card:hover { border-color: var(--accent); }
+  .group-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .group-name { font-weight:700; font-size:1.05rem; }
+  .group-meta { font-size:.8rem; color:var(--muted); margin-top:4px; }
+  .stage-badge {
+    padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:700;
+    white-space:nowrap;
+  }
+  .stage-0 { background:#3b82f622; color:var(--accent); border:1px solid #3b82f644; }
+  .stage-1 { background:#06b6d422; color:var(--accent2); border:1px solid #06b6d444; }
+  .stage-2 { background:#f59e0b22; color:var(--gold); border:1px solid #f59e0b44; }
+  .stage-3 { background:#10b98122; color:var(--green); border:1px solid #10b98144; }
+  .stage-done { background:#1e293b; color:var(--muted); border:1px solid #334155; }
+
+  .words-preview { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .word-chip {
+    background:var(--bg); border:1px solid var(--border);
+    padding:4px 12px; border-radius:20px; font-size:.82rem;
+    direction:ltr; font-family:monospace;
+  }
+
+  .next-review { display:flex; align-items:center; gap:6px; margin-top:10px; font-size:.83rem; color:var(--muted); }
+  .next-review.due { color:var(--gold); font-weight:700; }
+  .next-review.overdue { color:var(--red); font-weight:700; }
+
+  .actions { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+
+  /* ===== REVIEW MODAL ===== */
+  #modal-overlay {
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(0,0,0,.85); backdrop-filter:blur(8px);
+    align-items:center; justify-content:center;
+  }
+  #modal-overlay.show { display:flex; }
+  #modal {
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:32px;
+    width:90%; max-width:560px;
+    animation: popIn .35s cubic-bezier(.34,1.56,.64,1);
+    position:relative;
+  }
+  @keyframes popIn {
+    from{opacity:0;transform:scale(.85)}
+    to{opacity:1;transform:scale(1)}
+  }
+  .modal-title { font-family:'Tajawal',sans-serif; font-weight:900; font-size:1.4rem; margin-bottom:6px; }
+  .modal-subtitle { color:var(--muted); font-size:.88rem; margin-bottom:24px; }
+  .close-modal { position:absolute; top:16px; left:16px; background:var(--surface2);
+    border:none; color:var(--muted); width:32px; height:32px; border-radius:50%; cursor:pointer;
+    font-size:1rem; display:flex; align-items:center; justify-content:center; }
+
+  /* Word list in review */
+  .review-words { display:flex; flex-direction:column; gap:10px; max-height:400px; overflow-y:auto; margin-bottom:24px; }
+  .review-word-item {
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:14px; padding:14px 18px;
+    display:flex; align-items:center; justify-content:space-between;
+    direction:ltr;
+  }
+  .review-word { font-size:1.2rem; font-weight:700; font-family:monospace; }
+  .play-btn {
+    width:40px; height:40px; border-radius:50%; border:none;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff; font-size:1.1rem; cursor:pointer; transition:all .2s;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .play-btn:hover { transform:scale(1.1); }
+  .play-btn.playing { animation:pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{box-shadow:0 0 0 0 #3b82f688} 50%{box-shadow:0 0 0 8px transparent} }
+
+  /* ===== SUCCESS OVERLAY ===== */
+  #success-overlay {
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:var(--green);
+    align-items:center; justify-content:center; flex-direction:column; gap:20px;
+    animation: successIn .4s ease;
+  }
+  #success-overlay.show { display:flex; }
+  @keyframes successIn { from{opacity:0} to{opacity:1} }
+  .balloons {
+    font-size:4rem;
+    animation: float 2s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-20px)} }
+  .success-msg { font-family:'Tajawal',sans-serif; font-weight:900; font-size:2rem; color:#fff; text-align:center; }
+  .success-sub { color:rgba(255,255,255,.8); font-size:1rem; text-align:center; }
+  .confetti-container { position:fixed; inset:0; pointer-events:none; }
+
+  /* ===== STATS ===== */
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px; }
+  .stat-box { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px; text-align:center; }
+  .stat-num { font-family:'Tajawal',sans-serif; font-weight:900; font-size:2rem; color:var(--accent); }
+  .stat-label { font-size:.78rem; color:var(--muted); margin-top:4px; }
+
+  /* ===== EMPTY STATE ===== */
+  .empty { text-align:center; padding:60px 20px; color:var(--muted); }
+  .empty-icon { font-size:3.5rem; margin-bottom:16px; }
+  .empty h3 { font-size:1.2rem; margin-bottom:8px; color:var(--text); }
+
+  /* responsive */
+  @media(max-width:500px) {
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    header { padding:12px 16px; }
+    main { padding:20px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 <span>مُراجِع</span></div>
+  <div style="font-size:.78rem;color:var(--muted);">Spaced Repetition</div>
+</header>
+
+<div id="alerts-bar">
+  <strong style="color:var(--gold);">⚠️ لديك مراجعات مستحقة: </strong>
+  <span id="alerts-list"></span>
+</div>
+
+<main>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('groups')">📂 مجموعاتي</button>
+    <button class="tab" onclick="switchTab('add')">➕ إضافة مجموعة</button>
+    <button class="tab" onclick="switchTab('stats')">📊 إحصائيات</button>
+  </div>
+
+  <!-- GROUPS TAB -->
+  <div id="tab-groups" class="section active">
+    <div id="due-section" style="display:none;">
+      <div class="card" style="border-color:var(--gold); background:linear-gradient(135deg,#78350f15,#92400e15)">
+        <div class="card-title">⚠️ <span style="color:var(--gold)">مستحقة المراجعة الآن</span></div>
+        <div id="due-list"></div>
+      </div>
+    </div>
+    <div id="groups-list"></div>
+  </div>
+
+  <!-- ADD TAB -->
+  <div id="tab-add" class="section">
+    <div class="card">
+      <div class="card-title">➕ إضافة مجموعة كلمات جديدة</div>
+      <div class="field">
+        <label>اسم المجموعة (مثلاً: أيام الأسبوع، الأفعال الشاذة...)</label>
+        <input type="text" id="group-name" placeholder="اكتب اسم المجموعة هنا">
+      </div>
+      <div class="field">
+        <label>الكلمات (كلمة في كل سطر — يمكن إضافة المعنى بفاصلة مثل: Monday, الإثنين)</label>
+        <textarea id="group-words" placeholder="Sunday&#10;Monday&#10;Tuesday&#10;Wednesday&#10;Thursday&#10;Friday&#10;Saturday" dir="ltr"></textarea>
+      </div>
+      <button class="btn btn-primary" onclick="addGroup()">
+        ✅ إضافة المجموعة وبدء التذكير
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="color:var(--muted);">ℹ️ كيف يعمل النظام؟</div>
+      <div style="font-size:.88rem;line-height:1.9;color:var(--muted);">
+        <div>🕐 <strong style="color:var(--text)">بعد ساعة:</strong> المراجعة الأولى للتثبيت</div>
+        <div>☀️ <strong style="color:var(--text)">بعد يوم:</strong> المراجعة الثانية لترسيخ الذاكرة</div>
+        <div>📅 <strong style="color:var(--text)">بعد أسبوع:</strong> المراجعة الثالثة للتحويل للذاكرة طويلة المدى</div>
+        <div>🗓️ <strong style="color:var(--text)">بعد شهر:</strong> المراجعة الرابعة والأخيرة</div>
+        <div style="margin-top:8px;">بعد إتمام المراجعات الأربع، تنتقل المجموعة لـ <strong style="color:var(--green)">الأرشيف ✅</strong></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS TAB -->
+  <div id="tab-stats" class="section">
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-label">إجمالي المجموعات</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-done" style="color:var(--green)">0</div>
+        <div class="stat-label">مكتملة ✅</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num" id="stat-words" style="color:var(--gold)">0</div>
+        <div class="stat-label">كلمة في المجموع</div>
+      </div>
+    </div>
+    <div id="stats-all-groups"></div>
+  </div>
+</main>
+
+<!-- REVIEW MODAL -->
+<div id="modal-overlay">
+  <div id="modal">
+    <button class="close-modal" onclick="closeModal()">✕</button>
+    <div class="modal-title" id="modal-group-name"></div>
+    <div class="modal-subtitle" id="modal-subtitle"></div>
+    <div class="review-words" id="modal-words"></div>
+    <button class="btn btn-success" style="width:100%;justify-content:center;font-size:1rem;padding:14px;" onclick="completeReview()">
+      🎉 انتهيت من المراجعة!
+    </button>
+  </div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div id="success-overlay">
+  <div class="confetti-container" id="confetti-container"></div>
+  <div class="balloons">🎈🎊🎉</div>
+  <div class="success-msg" id="success-msg">أحسنت! 🌟</div>
+  <div class="success-sub" id="success-sub"></div>
+  <button class="btn" style="background:rgba(255,255,255,.25);color:#fff;margin-top:16px;border:2px solid rgba(255,255,255,.5)" onclick="hideSuccess()">
+    متابعة
+  </button>
+</div>
+
+<script>
+// ======= DATA =======
+const STAGES = [
+  { label: 'المراجعة الأولى', sub: 'بعد ساعة', ms: 60*60*1000 },
+  { label: 'المراجعة الثانية', sub: 'بعد يوم', ms: 24*60*60*1000 },
+  { label: 'المراجعة الثالثة', sub: 'بعد أسبوع', ms: 7*24*60*60*1000 },
+  { label: 'المراجعة الرابعة', sub: 'بعد شهر', ms: 30*24*60*60*1000 },
+];
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem('murajea_groups') || '[]'); }
+  catch(e) { return []; }
+}
+function saveData(groups) {
+  localStorage.setItem('murajea_groups', JSON.stringify(groups));
+}
+
+let currentReviewGroupId = null;
+
+// ======= TABS =======
+function switchTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  const idx = ['groups','add','stats'].indexOf(name);
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  if(name === 'groups') renderGroups();
+  if(name === 'stats') renderStats();
+}
+
+// ======= ADD GROUP =======
+function addGroup() {
+  const name = document.getElementById('group-name').value.trim();
+  const wordsRaw = document.getElementById('group-words').value.trim();
+  if(!name) { alert('اكتب اسم المجموعة!'); return; }
+  if(!wordsRaw) { alert('اكتب الكلمات!'); return; }
+  
+  const words = wordsRaw.split('\n').map(w => {
+    const parts = w.trim().split(',');
+    return { word: parts[0].trim(), meaning: parts[1] ? parts[1].trim() : '' };
+  }).filter(w => w.word);
+  
+  const groups = loadData();
+  const group = {
+    id: Date.now().toString(),
+    name,
+    words,
+    createdAt: Date.now(),
+    stage: 0, // 0-3 = pending stages, 4 = done
+    nextReview: Date.now() + STAGES[0].ms,
+    reviews: [],
+  };
+  groups.push(group);
+  saveData(groups);
+  
+  document.getElementById('group-name').value = '';
+  document.getElementById('group-words').value = '';
+  
+  renderGroups();
+  switchTab('groups');
+  checkAlerts();
+  alert(`✅ تم إضافة "${name}" بـ ${words.length} كلمة!\nسيتم تذكيرك بعد ساعة.`);
+}
+
+// ======= RENDER GROUPS =======
+function renderGroups() {
+  const groups = loadData();
+  const now = Date.now();
+  
+  // Due groups
+  const due = groups.filter(g => g.stage < 4 && g.nextReview <= now);
+  const upcoming = groups.filter(g => g.stage < 4 && g.nextReview > now);
+  const done = groups.filter(g => g.stage >= 4);
+  
+  const dueSection = document.getElementById('due-section');
+  const dueList = document.getElementById('due-list');
+  const mainList = document.getElementById('groups-list');
+  
+  if(due.length > 0) {
+    dueSection.style.display = 'block';
+    dueList.innerHTML = due.map(g => groupCardHTML(g, now)).join('');
+  } else {
+    dueSection.style.display = 'none';
+  }
+  
+  if(upcoming.length === 0 && done.length === 0 && due.length === 0) {
+    mainList.innerHTML = `<div class="empty">
+      <div class="empty-icon">📚</div>
+      <h3>لا توجد مجموعات بعد</h3>
+      <p>اضغط على "إضافة مجموعة" لتبدأ التعلم!</p>
+    </div>`;
+    return;
+  }
+  
+  let html = '';
+  if(upcoming.length > 0) {
+    html += `<div style="font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:10px;margin-top:4px;">⏳ قادمة</div>`;
+    html += upcoming.map(g => groupCardHTML(g, now)).join('');
+  }
+  if(done.length > 0) {
+    html += `<div style="font-size:.8rem;color:var(--muted);font-weight:700;margin-bottom:10px;margin-top:20px;">✅ مكتملة</div>`;
+    html += done.map(g => groupCardHTML(g, now)).join('');
+  }
+  mainList.innerHTML = html;
+}
+
+function groupCardHTML(g, now) {
+  const isDone = g.stage >= 4;
+  const isDue = !isDone && g.nextReview <= now;
+  const stageClass = isDone ? 'stage-done' : `stage-${g.stage}`;
+  const stageLabel = isDone ? '✅ مكتملة' : `${STAGES[g.stage].label} (${STAGES[g.stage].sub})`;
+  
+  let nextReviewHTML = '';
+  if(!isDone) {
+    const diff = g.nextReview - now;
+    if(diff <= 0) {
+      nextReviewHTML = `<div class="next-review overdue">🔴 متأخرة! يجب المراجعة الآن</div>`;
+    } else {
+      nextReviewHTML = `<div class="next-review">🕐 المراجعة القادمة: ${formatDuration(diff)}</div>`;
+    }
+  }
+
+  const wordsPreview = g.words.slice(0,6).map(w =>
+    `<span class="word-chip">${w.word}${w.meaning ? ' · ' + w.meaning : ''}</span>`
+  ).join('') + (g.words.length > 6 ? `<span class="word-chip" style="color:var(--muted)">+${g.words.length-6}</span>` : '');
+
+  return `<div class="group-card">
+    <div class="group-header">
+      <div>
+        <div class="group-name">${g.name}</div>
+        <div class="group-meta">${g.words.length} كلمة · أُضيفت ${formatDate(g.createdAt)}</div>
+      </div>
+      <span class="stage-badge ${stageClass}">${stageLabel}</span>
+    </div>
+    <div class="words-preview">${wordsPreview}</div>
+    ${nextReviewHTML}
+    <div class="actions">
+      ${!isDone ? `<button class="btn btn-primary btn-sm" onclick="startReview('${g.id}')">
+        ${isDue ? '🚀 مراجعة الآن' : '👁️ مراجعة مبكرة'}
+      </button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="deleteGroup('${g.id}')">🗑️ حذف</button>
+    </div>
+  </div>`;
+}
+
+function deleteGroup(id) {
+  if(!confirm('هل تريد حذف هذه المجموعة؟')) return;
+  const groups = loadData().filter(g => g.id !== id);
+  saveData(groups);
+  renderGroups();
+  checkAlerts();
+}
+
+// ======= REVIEW =======
+function startReview(id) {
+  const groups = loadData();
+  const group = groups.find(g => g.id === id);
+  if(!group) return;
+  currentReviewGroupId = id;
+  
+  document.getElementById('modal-group-name').textContent = '📖 ' + group.name;
+  document.getElementById('modal-subtitle').textContent =
+    `${group.stage < 4 ? STAGES[group.stage].label : 'مراجعة'} · ${group.words.length} كلمة — اضغط ▶️ لسماع النطق`;
+  
+  document.getElementById('modal-words').innerHTML = group.words.map((w,i) =>
+    `<div class="review-word-item">
+      <div>
+        <div class="review-word">${w.word}</div>
+        ${w.meaning ? `<div style="font-size:.8rem;color:var(--muted);direction:rtl;text-align:right">${w.meaning}</div>` : ''}
+      </div>
+      <button class="play-btn" onclick="speak('${w.word.replace(/'/g,"\\'")}', this)" title="استمع للنطق">▶️</button>
+    </div>`
+  ).join('');
+  
+  document.getElementById('modal-overlay').classList.add('show');
+}
+
+function speak(word, btn) {
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = 'en-US';
+  utterance.rate = 0.85;
+  
+  document.querySelectorAll('.play-btn').forEach(b => b.classList.remove('playing'));
+  btn.classList.add('playing');
+  
+  utterance.onend = () => btn.classList.remove('playing');
+  utterance.onerror = () => btn.classList.remove('playing');
+  
+  window.speechSynthesis.speak(utterance);
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('show');
+  window.speechSynthesis.cancel();
+  currentReviewGroupId = null;
+}
+
+function completeReview() {
+  if(!currentReviewGroupId) return;
+  const groups = loadData();
+  const group = groups.find(g => g.id === currentReviewGroupId);
+  if(!group) return;
+  
+  group.reviews.push({ stage: group.stage, completedAt: Date.now() });
+  group.stage += 1;
+  
+  const isDone = group.stage >= 4;
+  if(!isDone) {
+    group.nextReview = Date.now() + STAGES[group.stage].ms;
+  }
+  
+  saveData(groups);
+  closeModal();
+  renderGroups();
+  checkAlerts();
+  
+  const msg = isDone
+    ? `🏆 أتممت جميع مراجعات "${group.name}"!\nهذه الكلمات أصبحت في ذاكرتك للأبد! 💪`
+    : `رائع! انتهيت من ${STAGES[group.stage-1].label}\nسيذكّرك النظام بعد ${STAGES[group.stage].sub} للمراجعة القادمة 🚀`;
+  
+  showSuccess(isDone ? '🏆 ممتاز جداً!' : '🌟 أحسنت!', msg);
+}
+
+// ======= SUCCESS =======
+function showSuccess(title, sub) {
+  document.getElementById('success-msg').textContent = title;
+  document.getElementById('success-sub').textContent = sub;
+  document.getElementById('success-overlay').classList.add('show');
+  launchConfetti();
+}
+
+function hideSuccess() {
+  document.getElementById('success-overlay').classList.remove('show');
+  document.getElementById('confetti-container').innerHTML = '';
+}
+
+function launchConfetti() {
+  const container = document.getElementById('confetti-container');
+  container.innerHTML = '';
+  const colors = ['#3b82f6','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+  for(let i=0;i<80;i++) {
+    const el = document.createElement('div');
+    const color = colors[Math.floor(Math.random()*colors.length)];
+    const size = Math.random()*10+6;
+    el.style.cssText = `
+      position:absolute;
+      left:${Math.random()*100}%;
+      top:-20px;
+      width:${size}px; height:${size}px;
+      background:${color};
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation: fall ${Math.random()*2+2}s linear ${Math.random()*2}s forwards;
+    `;
+    container.appendChild(el);
+  }
+  const style = document.createElement('style');
+  style.textContent = `@keyframes fall { to { top:110vh; transform:rotate(720deg) translateX(${Math.random()*200-100}px); } }`;
+  container.appendChild(style);
+}
+
+// ======= ALERTS =======
+function checkAlerts() {
+  const groups = loadData();
+  const now = Date.now();
+  const due = groups.filter(g => g.stage < 4 && g.nextReview <= now);
+  const bar = document.getElementById('alerts-bar');
+  const list = document.getElementById('alerts-list');
+  
+  if(due.length > 0) {
+    bar.classList.add('show');
+    list.innerHTML = due.map(g =>
+      `<span class="alert-item" onclick="startReview('${g.id}')">
+        📚 ${g.name} (${STAGES[g.stage].label})
+      </span>`
+    ).join('');
+  } else {
+    bar.classList.remove('show');
+  }
+}
+
+// ======= STATS =======
+function renderStats() {
+  const groups = loadData();
+  const done = groups.filter(g=>g.stage>=4);
+  const totalWords = groups.reduce((s,g)=>s+g.words.length,0);
+  
+  document.getElementById('stat-total').textContent = groups.length;
+  document.getElementById('stat-done').textContent = done.length;
+  document.getElementById('stat-words').textContent = totalWords;
+  
+  document.getElementById('stats-all-groups').innerHTML = groups.length === 0
+    ? '<div class="empty"><div class="empty-icon">📊</div><h3>لا توجد إحصائيات بعد</h3></div>'
+    : groups.map(g => `
+        <div class="group-card" style="cursor:default">
+          <div class="group-header">
+            <div>
+              <div class="group-name">${g.name}</div>
+              <div class="group-meta">${g.words.length} كلمة · ${g.reviews.length} مراجعة مكتملة</div>
+            </div>
+            <span class="stage-badge ${g.stage>=4?'stage-done':'stage-'+g.stage}">
+              ${g.stage>=4 ? '✅ مكتملة' : `المرحلة ${g.stage+1}/4`}
+            </span>
+          </div>
+          <div style="height:6px;background:var(--border);border-radius:99px;margin-top:12px;overflow:hidden">
+            <div style="height:100%;width:${Math.min(g.stage/4*100,100)}%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:99px;transition:width .5s"></div>
+          </div>
+        </div>
+      `).join('');
+}
+
+// ======= HELPERS =======
+function formatDuration(ms) {
+  const h = Math.floor(ms/3600000);
+  const m = Math.floor((ms%3600000)/60000);
+  if(h >= 24*7) return `${Math.round(h/24)} يوم تقريباً`;
+  if(h >= 24) return `${Math.floor(h/24)} يوم و ${h%24} ساعة`;
+  if(h > 0) return `${h} ساعة و ${m} دقيقة`;
+  return `${m} دقيقة`;
+}
+function formatDate(ts) {
+  const d = new Date(ts);
+  return d.toLocaleDateString('ar-EG', {day:'numeric',month:'short'});
+}
+
+// ======= INIT =======
+document.addEventListener('DOMContentLoaded', () => {
+  renderGroups();
+  checkAlerts();
+  // Check every minute
+  setInterval(() => { checkAlerts(); renderGroups(); }, 60000);
+  
+  // Browser notifications
+  if('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => {
+      Notification.requestPermission().then(perm => {
+        if(perm === 'granted') {
+          scheduleNotifications();
+        }
+      });
+    }, 2000);
+  }
+  if(Notification.permission === 'granted') scheduleNotifications();
+});
+
+function scheduleNotifications() {
+  const groups = loadData();
+  const now = Date.now();
+  groups.forEach(g => {
+    if(g.stage >= 4) return;
+    const diff = g.nextReview - now;
+    if(diff > 0 && diff < 24*60*60*1000) {
+      setTimeout(() => {
+        new Notification('📚 مُراجِع - وقت المراجعة!', {
+          body: `راجع مجموعة "${g.name}" الآن - ${STAGES[g.stage].label}`,
+          icon: '📚'
+        });
+      }, diff);
+    }
+  });
+}
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeModal();
+});
+</script>
+</body>
+</html>
